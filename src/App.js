@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { HexColorPicker } from "react-colorful";
 import axios from "axios";
 
 import { config } from "./config";
@@ -25,8 +26,16 @@ function App(props) {
     const response = await axios.post(`${config.API}/generate`, request, {
       headers: {
         "Content-Type": "application/json"
-      }
+      },
+      responseType: "blob"
     });
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `${fileId}.zip`); //or any other extension
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   };
 
   const handleTitleSelect = e => {
@@ -53,10 +62,6 @@ function App(props) {
     setFileId(response.data.fileId.toString());
   };
 
-  const handleRadioSelect = e => {
-    setTitleColor(e.target.value);
-  };
-
   const handleCheckboxSelect = e => {
     if (fonts.includes(e.target.value)) {
       setFonts(fonts.filter(f => f !== e.target.value));
@@ -65,7 +70,6 @@ function App(props) {
     }
   };
 
-  const availableColors = ["Red", "Blue", "Green"];
   const availableFonts = ["BebasNeue-Regular", "JuliusSansOne-Regular"];
 
   return (
@@ -74,62 +78,55 @@ function App(props) {
       <section id="app">
         <div id="options">
           <form onSubmit={handleFormSubmit}>
-            <h4>Select your file:</h4>
-            <div id="file">
-              <input type="file" onChange={handleFileSelect} />
-            </div>
+            <div id="options-outer">
+              <div className="options-inner">
+                <div className="options-label">Select your file:</div>
+                <div id="file">
+                  <input type="file" onChange={handleFileSelect} />
+                </div>
+              </div>
+              <div className="options-inner">
+                <div className="options-label">Select your color:</div>
+                <HexColorPicker color={titleColor} onChange={setTitleColor} />
 
-            <br />
-
-            <h4>Select your title:</h4>
-            <div id="title">
-              <input type="text" value={title} onChange={handleTitleSelect} />
-            </div>
-
-            <br />
-
-            <h4>Please select your color:</h4>
-            {availableColors.map(c => (
-              <div id="radio">
-                <label>
+                <br />
+              </div>
+              <div className="options-inner">
+                <div className="options-label">Select your title:</div>
+                <div id="title">
                   <input
-                    type="radio"
-                    value={c}
-                    checked={titleColor === c}
-                    onChange={handleRadioSelect}
-                    key={c}
+                    type="text"
+                    value={title}
+                    onChange={handleTitleSelect}
                   />
-                  {c}
-                </label>
+                </div>
               </div>
-            ))}
-
-            <br />
-
-            <h4>Select your font:</h4>
-            {availableFonts.map(f => (
-              <div id="checkbox">
-                <label>
-                  <input
-                    type="checkbox"
-                    value={f}
-                    checked={fonts.includes(f)}
-                    onChange={handleCheckboxSelect}
-                    key={f}
-                  />{" "}
-                  {f}
-                </label>
+              <div className="options-inner">
+                <div className="options-label">Select your font:</div>
+                {availableFonts.map(f => (
+                  <div id="checkbox">
+                    <label>
+                      <input
+                        type="checkbox"
+                        value={f}
+                        checked={fonts.includes(f)}
+                        onChange={handleCheckboxSelect}
+                        key={f}
+                      />{" "}
+                      {f}
+                    </label>
+                  </div>
+                ))}
               </div>
-            ))}
-
-            <br />
-
-            <input type="submit" value="Submit" />
+            </div>
+            <div className="options-inner">
+              <input type="submit" value="Submit" />
+            </div>
           </form>
         </div>
 
         <div id="image">
-          {fileSrc ? <img src={fileSrc} alt="your image" /> : null}
+          {fileSrc ? <img src={fileSrc} alt="uploaded file" /> : null}
         </div>
       </section>
       <footer>Copyright &copy; 2021 drsherlock</footer>
