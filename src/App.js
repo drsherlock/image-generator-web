@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import axios from "axios";
+import ImageGallery from "react-image-gallery";
 
 import { config } from "./config";
+import { availableFonts } from "./availableFonts";
 
 import "./App.css";
 
@@ -12,6 +14,7 @@ function App(props) {
   const [titleColor, setTitleColor] = useState("");
   const [fonts, setFonts] = useState([]);
   const [fileSrc, setFileSrc] = useState(null);
+  const [images, setImages] = useState([]);
 
   const handleFormSubmit = async e => {
     e.preventDefault();
@@ -26,16 +29,17 @@ function App(props) {
     const response = await axios.post(`${config.API}/generate`, request, {
       headers: {
         "Content-Type": "application/json"
-      },
-      responseType: "blob"
+      }
+      // responseType: "blob"
     });
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", `${fileId}.zip`); //or any other extension
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    setImages(response.data.images);
+    // const url = window.URL.createObjectURL(new Blob([response.data]));
+    // const link = document.createElement("a");
+    // link.href = url;
+    // link.setAttribute("download", `${fileId}.zip`); //or any other extension
+    // document.body.appendChild(link);
+    // link.click();
+    // link.remove();
   };
 
   const handleTitleSelect = e => {
@@ -49,6 +53,7 @@ function App(props) {
       return;
     }
 
+    setImages([]);
     setFileSrc(URL.createObjectURL(file));
 
     let formData = new FormData();
@@ -59,7 +64,7 @@ function App(props) {
         "Content-Type": "multipart/form-data"
       }
     });
-    setFileId(response.data.fileId.toString());
+    setFileId(response.data.imageId.toString());
   };
 
   const handleCheckboxSelect = e => {
@@ -70,8 +75,6 @@ function App(props) {
     }
   };
 
-  const availableFonts = ["BebasNeue-Regular", "JuliusSansOne-Regular"];
-
   return (
     <>
       <header>Image Generator</header>
@@ -80,19 +83,19 @@ function App(props) {
           <form onSubmit={handleFormSubmit}>
             <div id="options-outer">
               <div className="options-inner">
-                <div className="options-label">Select your file:</div>
+                <div className="options-label">Select your file</div>
                 <div id="file">
                   <input type="file" onChange={handleFileSelect} />
                 </div>
               </div>
               <div className="options-inner">
-                <div className="options-label">Select your color:</div>
+                <div className="options-label">Select your color</div>
                 <HexColorPicker color={titleColor} onChange={setTitleColor} />
 
                 <br />
               </div>
               <div className="options-inner">
-                <div className="options-label">Select your title:</div>
+                <div className="options-label">Select your title</div>
                 <div id="title">
                   <input
                     type="text"
@@ -102,18 +105,18 @@ function App(props) {
                 </div>
               </div>
               <div className="options-inner">
-                <div className="options-label">Select your font:</div>
+                <div className="options-label">Select your font</div>
                 {availableFonts.map(f => (
                   <div id="checkbox">
                     <label>
                       <input
                         type="checkbox"
-                        value={f}
-                        checked={fonts.includes(f)}
+                        value={f.key}
+                        checked={fonts.includes(f.key)}
                         onChange={handleCheckboxSelect}
-                        key={f}
+                        key={f.key}
                       />{" "}
-                      {f}
+                      {f.name}
                     </label>
                   </div>
                 ))}
@@ -126,7 +129,21 @@ function App(props) {
         </div>
 
         <div id="image">
-          {fileSrc ? <img src={fileSrc} alt="uploaded file" /> : null}
+          {fileSrc ? (
+            images.length === 0 ? (
+              <img src={fileSrc} alt="uploaded file" id="image-original" />
+            ) : (
+              <ImageGallery
+                showThumbnails={false}
+                showFullscreenButton={false}
+                showPlayButton={false}
+                lazyLoad={true}
+                items={images.map(i => ({
+                  original: `${config.API}/${i}`
+                }))}
+              />
+            )
+          ) : null}
         </div>
       </section>
       <footer>Copyright &copy; 2021 drsherlock</footer>
