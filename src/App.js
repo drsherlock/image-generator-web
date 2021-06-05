@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { HexColorPicker } from "react-colorful";
 import axios from "axios";
-import ImageGallery from "react-image-gallery";
 
 import { config } from "./config";
-import { availableFonts } from "./availableFonts";
+
+import Options from "./components/Options";
+import Image from "./components/Image";
 
 import "./App.css";
 
@@ -64,7 +64,7 @@ function App(props) {
         "Content-Type": "multipart/form-data"
       }
     });
-    setFileId(response.data.imageId.toString());
+    setFileId(response.data.id.toString());
   };
 
   const handleCheckboxSelect = e => {
@@ -75,76 +75,30 @@ function App(props) {
     }
   };
 
+  const handleMouseClick = e => {
+    console.log(e.target);
+  };
+
   return (
     <>
       <header>Image Generator</header>
       <section id="app">
-        <div id="options">
-          <form onSubmit={handleFormSubmit}>
-            <div id="options-outer">
-              <div className="options-inner">
-                <div className="options-label">Select your file</div>
-                <div id="file">
-                  <input type="file" onChange={handleFileSelect} />
-                </div>
-              </div>
-              <div className="options-inner">
-                <div className="options-label">Select your color</div>
-                <HexColorPicker color={titleColor} onChange={setTitleColor} />
+        <Options
+          handleFormSubmit={handleFormSubmit}
+          handleFileSelect={handleFileSelect}
+          titleColor={titleColor}
+          setTitleColor={setTitleColor}
+          title={title}
+          handleTitleSelect={handleTitleSelect}
+          fonts={fonts}
+          handleCheckboxSelect={handleCheckboxSelect}
+        />
 
-                <br />
-              </div>
-              <div className="options-inner">
-                <div className="options-label">Select your title</div>
-                <div id="title">
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={handleTitleSelect}
-                  />
-                </div>
-              </div>
-              <div className="options-inner">
-                <div className="options-label">Select your font</div>
-                {availableFonts.map(f => (
-                  <div id="checkbox">
-                    <label>
-                      <input
-                        type="checkbox"
-                        value={f.key}
-                        checked={fonts.includes(f.key)}
-                        onChange={handleCheckboxSelect}
-                        key={f.key}
-                      />{" "}
-                      {f.name}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="options-inner">
-              <input type="submit" value="Submit" />
-            </div>
-          </form>
-        </div>
-
-        <div id="image">
-          {fileSrc ? (
-            images.length === 0 ? (
-              <img src={fileSrc} alt="uploaded file" id="image-original" />
-            ) : (
-              <ImageGallery
-                showThumbnails={false}
-                showFullscreenButton={false}
-                showPlayButton={false}
-                lazyLoad={true}
-                items={images.map(i => ({
-                  original: `${config.API}/${i}`
-                }))}
-              />
-            )
-          ) : null}
-        </div>
+        <Image
+          fileSrc={fileSrc}
+          images={images}
+          handleMouseClick={handleMouseClick}
+        />
       </section>
       <footer>Copyright &copy; 2021 drsherlock</footer>
     </>
