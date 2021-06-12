@@ -53,7 +53,7 @@ workflows:
           context: image-generator
           filters:
             branches:
-              only: master
+              only: main
       - deploy:
           requires:
             - publish
