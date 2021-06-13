@@ -1,14 +1,21 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
+import { Provider } from "react-redux";
+
+import reportWebVitals from "./reportWebVitals";
+import { store } from "./store";
+
 import App from "./App";
 import ErrorBoundary from "./ErrorBoundary";
-import reportWebVitals from "./reportWebVitals";
+
+import "./index.css";
 
 ReactDOM.render(
   <React.StrictMode>
     <ErrorBoundary>
-      <App />
+      <Provider store={store}>
+        <App />
+      </Provider>
     </ErrorBoundary>
   </React.StrictMode>,
   document.getElementById("root")

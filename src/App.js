@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { connect } from "react-redux";
 
-import { config } from "./config";
+import { selectImage, generateImage } from "./actions";
 
 import Options from "./components/Options";
 import Image from "./components/Image";
@@ -9,30 +9,23 @@ import Image from "./components/Image";
 import "./App.css";
 
 function App(props) {
-  const [fileId, setFileId] = useState(null);
+  const { onImageSelect, onImageGenerate, imageId, images } = props;
   const [title, setTitle] = useState("");
   const [titleColor, setTitleColor] = useState("");
   const [fonts, setFonts] = useState([]);
   const [fileSrc, setFileSrc] = useState(null);
-  const [images, setImages] = useState([]);
 
   const handleFormSubmit = async e => {
     e.preventDefault();
 
     const request = {
-      fileId: fileId,
+      fileId: imageId,
       title: title,
       titleColor: titleColor,
       fonts: fonts
     };
 
-    const response = await axios.post(`${config.API}/generate`, request, {
-      headers: {
-        "Content-Type": "application/json"
-      }
-      // responseType: "blob"
-    });
-    setImages(response.data.images);
+    onImageGenerate(request);
     // const url = window.URL.createObjectURL(new Blob([response.data]));
     // const link = document.createElement("a");
     // link.href = url;
@@ -53,18 +46,12 @@ function App(props) {
       return;
     }
 
-    setImages([]);
     setFileSrc(URL.createObjectURL(file));
 
-    let formData = new FormData();
-    formData.append("image", file);
+    let request = new FormData();
+    request.append("image", file);
 
-    const response = await axios.post(`${config.API}/upload`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data"
-      }
-    });
-    setFileId(response.data.id.toString());
+    onImageSelect(request);
   };
 
   const handleCheckboxSelect = e => {
@@ -105,4 +92,22 @@ function App(props) {
   );
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    imageId: state.imageId,
+    images: state.images
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onImageSelect: request => {
+      dispatch(selectImage(request));
+    },
+    onImageGenerate: request => {
+      dispatch(generateImage(request));
+    }
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
