@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
+import Peer from "peerjs";
 
 import { selectImage, generateImage } from "./actions";
 
+import { usePeer } from "./hooks";
+
 import Options from "./components/Options";
 import Image from "./components/Image";
+import Connect from "./components/Connect";
 
 import "./App.css";
 
@@ -14,6 +18,22 @@ function App(props) {
   const [titleColor, setTitleColor] = useState("");
   const [fonts, setFonts] = useState([]);
   const [fileSrc, setFileSrc] = useState(null);
+
+  const [peerId, setPeerId] = useState("");
+
+  const peer = new Peer();
+  const [conn, setConn] = usePeer(peer, setPeerId);
+
+  const connect = () => {
+    const connection = peer.connect(peerId);
+    setConn(connection);
+    connection.on("open", () => {
+      connection.on("data", function(data) {
+        console.log("Received", data);
+      });
+      connection.send("hi");
+    });
+  };
 
   const handleFormSubmit = async e => {
     e.preventDefault();
@@ -36,6 +56,7 @@ function App(props) {
   };
 
   const handleTitleSelect = e => {
+    // conn.send(e.target.value);
     setTitle(e.target.value);
   };
 
@@ -87,6 +108,7 @@ function App(props) {
           handleMouseClick={handleMouseClick}
         />
       </section>
+      <Connect peerId={peerId} setPeerId={setPeerId} connect={connect} />
       <footer>Copyright &copy; 2021 drsherlock</footer>
     </>
   );
