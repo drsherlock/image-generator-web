@@ -28,13 +28,12 @@ function Options(props) {
           <div className="options-inner">
             <div className="options-label">Select your color</div>
             <HexColorPicker color={titleColor} onChange={setTitleColor} />
-
             <br />
           </div>
           <div className="options-inner">
             <div className="options-label">Select your title</div>
             <div id="title">
-              <input type="text" value={title} onChange={handleTitleSelect} />
+              <input type="text" value={title} onKeyPress={handleTitleSelect} />
             </div>
           </div>
           <div className="options-inner">

@@ -2575,6 +2575,16 @@ atob@^2.1.2:
   resolved "https://registry.npmjs.org/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
+automerge@0.14.2:
+  version "0.14.2"
+  resolved "https://registry.yarnpkg.com/automerge/-/automerge-0.14.2.tgz#47503df1772fe3d917b80226e074589d9fb5f549"
+  integrity sha512-shiwuJHCbNRI23WZyIECLV4Ovf3WiAFJ7P9BH4l5gON1In/UUbjcSJKRygtIirObw2UQumeYxp3F2XBdSvQHnA==
+  dependencies:
+    immutable "^3.8.2"
+    transit-immutable-js "^0.7.0"
+    transit-js "^0.8.861"
+    uuid "^3.4.0"
+
 autoprefixer@^9.6.1:
   version "9.8.6"
   resolved "https://registry.npmjs.org/autoprefixer/-/autoprefixer-9.8.6.tgz#3b73594ca1bf9266320c5acf1588d74dea74210f"
@@ -5765,6 +5775,11 @@ immer@8.0.1:
   version "8.0.1"
   resolved "https://registry.npmjs.org/immer/-/immer-8.0.1.tgz#9c73db683e2b3975c424fb0572af5889877ae656"
   integrity sha512-aqXhGP7//Gui2+UrEtvxZxSquQVXTpZ7KDxfCcKAF3Vysvw0CViVaW9RZ1j1xlIYqaaaipBoqdqeibkc18PNvA==
+
+immutable@^3.8.2:
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.2.tgz#c2439951455bb39913daf281376f1530e104adf3"
+  integrity sha1-wkOZUUVbs5kT2vKBN28VMOEErfM=
 
 import-cwd@^2.0.0:
   version "2.1.0"
@@ -10790,6 +10805,16 @@ tr46@^2.0.2:
   integrity sha512-3n1qG+/5kg+jrbTzwAykB5yRYtQCTqOGKq5U5PE3b0a1/mzo6snDhjGS0zJVJunO0NrT3Dg1MLy5TjWP/UJppg==
   dependencies:
     punycode "^2.1.1"
+
+transit-immutable-js@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/transit-immutable-js/-/transit-immutable-js-0.7.0.tgz#993e25089b6311ff402140f556276d6d253005d9"
+  integrity sha1-mT4lCJtjEf9AIUD1VidtbSUwBdk=
+
+transit-js@^0.8.861:
+  version "0.8.874"
+  resolved "https://registry.yarnpkg.com/transit-js/-/transit-js-0.8.874.tgz#37b27d6632bd796567c359220297c862e3988bbb"
+  integrity sha512-IDJJGKRzUbJHmN0P15HBBa05nbKor3r2MmG6aSt0UxXIlJZZKcddTk67/U7WyAeW9Hv/VYI02IqLzolsC4sbPA==
 
 tryer@^1.0.1:
   version "1.0.1"
