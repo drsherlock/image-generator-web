@@ -5,6 +5,8 @@ import Automerge from "automerge";
 
 import { selectImage, generateImage, selectTitle } from "./actions";
 
+import * as am from "./am";
+
 import Options from "./components/Options";
 import Image from "./components/Image";
 import Connect from "./components/Connect";
@@ -56,22 +58,19 @@ function App(props) {
       alert("Connected!");
       connection.on("data", onData);
       // connection.send("hi");
-      const state = Automerge.change(
+      const state = am.change(
         localState,
         "Initial Update",
         s => (s.title = new Automerge.Text())
       );
       onTitleSelect(state);
-      connection.send(JSON.stringify(Automerge.getAllChanges(state)));
+      connection.send(JSON.stringify(am.getAllChanges(state)));
     });
   };
 
   const onData = useCallback(
     changes => {
-      let newState = Automerge.applyChanges(
-        refValue.current,
-        JSON.parse(changes)
-      );
+      let newState = am.applyChanges(refValue.current, JSON.parse(changes));
       onTitleSelect(newState);
 
       setTitle(newState.title.toString());
@@ -101,12 +100,14 @@ function App(props) {
 
   const handleTitleSelect = useCallback(
     e => {
-      const newState = Automerge.change(localState, "Update title", s => {
-        s.title.insertAt(localState.title.length, e.key);
-      });
-      let changes = Automerge.getChanges(localState, newState);
-      conn.send(JSON.stringify(changes));
-      onTitleSelect(newState);
+      if (conn) {
+        const newState = am.change(localState, "Update title", s => {
+          s.title.insertAt(localState.title.length, e.key);
+        });
+        const changes = am.getChanges(localState, newState);
+        conn.send(JSON.stringify(changes));
+        onTitleSelect(newState);
+      }
 
       setTitle(title + e.key);
     },
