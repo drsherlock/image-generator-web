@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import Peer from "peerjs";
 import Automerge from "automerge";
 
-import { selectImage, generateImage } from "./actions";
+import { selectImage, generateImage, selectTitle } from "./actions";
 
 import Options from "./components/Options";
 import Image from "./components/Image";
@@ -12,7 +12,14 @@ import Connect from "./components/Connect";
 import "./App.css";
 
 function App(props) {
-  const { onImageSelect, onImageGenerate, imageId, images } = props;
+  const {
+    onImageSelect,
+    onImageGenerate,
+    onTitleSelect,
+    imageId,
+    images,
+    localState
+  } = props;
   const [title, setTitle] = useState("");
   const [titleColor, setTitleColor] = useState("");
   const [fonts, setFonts] = useState([]);
@@ -22,8 +29,6 @@ function App(props) {
   const [conn, setConn] = useState(null);
 
   const peer = new Peer();
-
-  const [localState, setLocalState] = useState(Automerge.init());
 
   const refValue = useRef(localState);
   useEffect(() => {
@@ -48,6 +53,7 @@ function App(props) {
     const connection = peer.connect(peerId);
     setConn(connection);
     connection.on("open", () => {
+      alert("Connected!");
       connection.on("data", onData);
       // connection.send("hi");
       const state = Automerge.change(
@@ -55,7 +61,7 @@ function App(props) {
         "Initial Update",
         s => (s.title = new Automerge.Text())
       );
-      setLocalState(state);
+      onTitleSelect(state);
       connection.send(JSON.stringify(Automerge.getAllChanges(state)));
     });
   };
@@ -66,9 +72,9 @@ function App(props) {
         refValue.current,
         JSON.parse(changes)
       );
-      setLocalState(newState);
+      onTitleSelect(newState);
+
       setTitle(newState.title.toString());
-      // let finalState = Automerge.merge(localState, peerState);
     },
     [localState]
   );
@@ -100,10 +106,11 @@ function App(props) {
       });
       let changes = Automerge.getChanges(localState, newState);
       conn.send(JSON.stringify(changes));
-      setLocalState(newState);
+      onTitleSelect(newState);
+
       setTitle(title + e.key);
     },
-    [localState, conn]
+    [localState, conn, title]
   );
 
   const handleFileSelect = async e => {
@@ -162,8 +169,9 @@ function App(props) {
 
 const mapStateToProps = state => {
   return {
-    imageId: state.imageId,
-    images: state.images
+    imageId: state.image.imageId,
+    images: state.image.images,
+    localState: state.automerge.localState
   };
 };
 
@@ -174,6 +182,9 @@ const mapDispatchToProps = dispatch => {
     },
     onImageGenerate: request => {
       dispatch(generateImage(request));
+    },
+    onTitleSelect: state => {
+      dispatch(selectTitle(state));
     }
   };
 };
