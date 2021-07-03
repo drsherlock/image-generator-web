@@ -10,7 +10,8 @@ function Options(props) {
     titleColor,
     setTitleColor,
     title,
-    handleTitleSelect,
+    handleTitleSelectPeer,
+    handleTitleSelectLocal,
     fonts,
     handleCheckboxSelect
   } = props;
@@ -33,7 +34,12 @@ function Options(props) {
           <div className="options-inner">
             <div className="options-label">Select your title</div>
             <div id="title">
-              <input type="text" value={title} onKeyPress={handleTitleSelect} />
+              <input
+                type="text"
+                value={title}
+                onKeyDown={handleTitleSelectPeer}
+                onChange={handleTitleSelectLocal}
+              />
             </div>
           </div>
           <div className="options-inner">

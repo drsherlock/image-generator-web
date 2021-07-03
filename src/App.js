@@ -11,6 +11,8 @@ import Options from "./components/Options";
 import Image from "./components/Image";
 import Connect from "./components/Connect";
 
+import { CHARACTERS } from "./keyMap";
+
 import "./App.css";
 
 function App(props) {
@@ -29,6 +31,8 @@ function App(props) {
 
   const [peerId, setPeerId] = useState("");
   const [conn, setConn] = useState(null);
+
+  const [cursorPos, setCursorPos] = useState(0);
 
   const peer = new Peer();
 
@@ -68,15 +72,13 @@ function App(props) {
     });
   };
 
-  const onData = useCallback(
-    changes => {
-      let newState = am.applyChanges(refValue.current, JSON.parse(changes));
-      onTitleSelect(newState);
+  const onData = changes => {
+    const newState = am.applyChanges(refValue.current, JSON.parse(changes));
+    onTitleSelect(newState);
 
-      setTitle(newState.title.toString());
-    },
-    [localState]
-  );
+    setTitle(newState.title.toString());
+    setCursorPos(newState.title.length);
+  };
 
   const handleFormSubmit = async e => {
     e.preventDefault();
@@ -98,21 +100,38 @@ function App(props) {
     // link.remove();
   };
 
-  const handleTitleSelect = useCallback(
+  const handleTitleSelectPeer = useCallback(
     e => {
+      // console.log(e);
       if (conn) {
         const newState = am.change(localState, "Update title", s => {
-          s.title.insertAt(localState.title.length, e.key);
+          if (e.key === "Backspace") {
+            s.title.deleteAt(cursorPos - 1);
+            setCursorPos(cursorPos - 1);
+          } else if (CHARACTERS.includes(e.key)) {
+            s.title.insertAt(cursorPos, e.key);
+            setCursorPos(cursorPos + 1);
+          } else if (e.key === "ArrowLeft") {
+            setCursorPos(Math.max(cursorPos - 1, 0));
+          } else if (e.key === "ArrowRight") {
+            setCursorPos(Math.min(cursorPos + 1, s.title.length));
+          }
         });
         const changes = am.getChanges(localState, newState);
         conn.send(JSON.stringify(changes));
         onTitleSelect(newState);
       }
-
-      setTitle(title + e.key);
     },
-    [localState, conn, title]
+    [localState, conn, title, cursorPos]
   );
+
+  // useEffect(() => {
+  //   console.log("loc-", cursorPos);
+  // }, [cursorPos]);
+
+  const handleTitleSelectLocal = useCallback(e => {
+    setTitle(e.target.value);
+  }, []);
 
   const handleFileSelect = async e => {
     const file = e.target.files[0];
@@ -123,7 +142,7 @@ function App(props) {
 
     setFileSrc(URL.createObjectURL(file));
 
-    let request = new FormData();
+    const request = new FormData();
     request.append("image", file);
 
     onImageSelect(request);
@@ -151,7 +170,8 @@ function App(props) {
           titleColor={titleColor}
           setTitleColor={setTitleColor}
           title={title}
-          handleTitleSelect={handleTitleSelect}
+          handleTitleSelectPeer={handleTitleSelectPeer}
+          handleTitleSelectLocal={handleTitleSelectLocal}
           fonts={fonts}
           handleCheckboxSelect={handleCheckboxSelect}
         />
