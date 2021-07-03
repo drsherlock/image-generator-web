@@ -1,14 +1,14 @@
 import Automerge from "automerge";
 
-import { SELECT_TITLE } from "../actions/types";
+import { UPDATE_LOCAL_STATE } from "../actions/types";
 
 const initialState = {
   localState: Automerge.init()
 };
 
-export default function imagesReducer(state = initialState, action) {
+export default function automerge(state = initialState, action) {
   switch (action.type) {
-    case SELECT_TITLE:
+    case UPDATE_LOCAL_STATE:
       return {
         localState: action.payload
       };

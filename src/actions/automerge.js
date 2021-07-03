@@ -1,6 +1,6 @@
-import { SELECT_TITLE } from "./types";
+import { UPDATE_LOCAL_STATE } from "./types";
 
-export const selectTitle = data => ({
-  type: SELECT_TITLE,
+export const updateLocalState = data => ({
+  type: UPDATE_LOCAL_STATE,
   payload: data
 });

@@ -8,12 +8,14 @@ function Options(props) {
     handleFormSubmit,
     handleFileSelect,
     titleColor,
-    setTitleColor,
+    handleTitleColorSelectLocal,
+    handleTitleColorSelectPeer,
     title,
     handleTitleSelectPeer,
     handleTitleSelectLocal,
     fonts,
-    handleCheckboxSelect
+    handleFontsSelectLocal,
+    handleFontsSelectPeer
   } = props;
 
   return (
@@ -28,7 +30,13 @@ function Options(props) {
           </div>
           <div className="options-inner">
             <div className="options-label">Select your color</div>
-            <HexColorPicker color={titleColor} onChange={setTitleColor} />
+            <HexColorPicker
+              color={titleColor}
+              onChange={c => {
+                handleTitleColorSelectLocal(c);
+                handleTitleColorSelectPeer(c);
+              }}
+            />
             <br />
           </div>
           <div className="options-inner">
@@ -51,7 +59,10 @@ function Options(props) {
                     type="checkbox"
                     value={f.key}
                     checked={fonts.includes(f.key)}
-                    onChange={handleCheckboxSelect}
+                    onChange={e => {
+                      handleFontsSelectLocal(e);
+                      handleFontsSelectPeer(e);
+                    }}
                     key={f.key}
                   />{" "}
                   {f.name}

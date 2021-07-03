@@ -14,7 +14,7 @@ const initialState = {
   error: null
 };
 
-export default function imagesReducer(state = initialState, action) {
+export default function image(state = initialState, action) {
   switch (action.type) {
     case SELECT_IMAGE_STARTED:
       return {

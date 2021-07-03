@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import Peer from "peerjs";
 import Automerge from "automerge";
 
-import { selectImage, generateImage, selectTitle } from "./actions";
+import { selectImage, generateImage, updateLocalState } from "./actions";
 
 import * as am from "./am";
 
@@ -19,7 +19,7 @@ function App(props) {
   const {
     onImageSelect,
     onImageGenerate,
-    onTitleSelect,
+    onLocalStateChange,
     imageId,
     images,
     localState
@@ -62,22 +62,24 @@ function App(props) {
       alert("Connected!");
       connection.on("data", onData);
       // connection.send("hi");
-      const state = am.change(
-        localState,
-        "Initial Update",
-        s => (s.title = new Automerge.Text())
-      );
-      onTitleSelect(state);
+      const state = am.change(localState, "Initial Update", s => {
+        s.title = new Automerge.Text();
+        s.fonts = [];
+        s.titleColor = "";
+      });
+      onLocalStateChange(state);
       connection.send(JSON.stringify(am.getAllChanges(state)));
     });
   };
 
   const onData = changes => {
     const newState = am.applyChanges(refValue.current, JSON.parse(changes));
-    onTitleSelect(newState);
+    onLocalStateChange(newState);
 
     setTitle(newState.title.toString());
     setCursorPos(newState.title.length);
+    setFonts(newState.fonts);
+    setTitleColor(newState.titleColor);
   };
 
   const handleFormSubmit = async e => {
@@ -117,9 +119,7 @@ function App(props) {
             setCursorPos(Math.min(cursorPos + 1, s.title.length));
           }
         });
-        const changes = am.getChanges(localState, newState);
-        conn.send(JSON.stringify(changes));
-        onTitleSelect(newState);
+        handleNewState(newState);
       }
     },
     [localState, conn, title, cursorPos]
@@ -148,12 +148,44 @@ function App(props) {
     onImageSelect(request);
   };
 
-  const handleCheckboxSelect = e => {
+  const handleFontsSelectLocal = e => {
     if (fonts.includes(e.target.value)) {
       setFonts(fonts.filter(f => f !== e.target.value));
     } else {
       setFonts([...fonts, e.target.value]);
     }
+  };
+
+  const handleFontsSelectPeer = e => {
+    if (conn) {
+      const newState = am.change(localState, "Update fonts", s => {
+        if (s.fonts.includes(e.target.value)) {
+          s.fonts = fonts.filter(f => f !== e.target.value);
+        } else {
+          s.fonts = [...fonts, e.target.value];
+        }
+      });
+      handleNewState(newState);
+    }
+  };
+
+  const handleTitleColorSelectLocal = c => {
+    setTitleColor(c);
+  };
+
+  const handleTitleColorSelectPeer = c => {
+    if (conn) {
+      const newState = am.change(localState, "Update title color", s => {
+        s.titleColor = c;
+      });
+      handleNewState(newState);
+    }
+  };
+
+  const handleNewState = newState => {
+    const changes = am.getChanges(localState, newState);
+    conn.send(JSON.stringify(changes));
+    onLocalStateChange(newState);
   };
 
   const handleMouseClick = e => {
@@ -168,12 +200,14 @@ function App(props) {
           handleFormSubmit={handleFormSubmit}
           handleFileSelect={handleFileSelect}
           titleColor={titleColor}
-          setTitleColor={setTitleColor}
+          handleTitleColorSelectLocal={handleTitleColorSelectLocal}
+          handleTitleColorSelectPeer={handleTitleColorSelectPeer}
           title={title}
           handleTitleSelectPeer={handleTitleSelectPeer}
           handleTitleSelectLocal={handleTitleSelectLocal}
           fonts={fonts}
-          handleCheckboxSelect={handleCheckboxSelect}
+          handleFontsSelectLocal={handleFontsSelectLocal}
+          handleFontsSelectPeer={handleFontsSelectPeer}
         />
 
         <Image
@@ -204,8 +238,8 @@ const mapDispatchToProps = dispatch => {
     onImageGenerate: request => {
       dispatch(generateImage(request));
     },
-    onTitleSelect: state => {
-      dispatch(selectTitle(state));
+    onLocalStateChange: state => {
+      dispatch(updateLocalState(state));
     }
   };
 };
