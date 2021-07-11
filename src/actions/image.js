@@ -8,7 +8,8 @@ import {
   SELECT_IMAGE_FAILURE,
   GENERATE_IMAGE_STARTED,
   GENERATE_IMAGE_SUCCESS,
-  GENERATE_IMAGE_FAILURE
+  GENERATE_IMAGE_FAILURE,
+  SET_IMAGE_ID
 } from "./types";
 
 export const selectImage = request => {
@@ -77,5 +78,12 @@ const generateImageFailure = error => ({
   type: GENERATE_IMAGE_FAILURE,
   payload: {
     error
+  }
+});
+
+export const setImageId = id => ({
+  type: SET_IMAGE_ID,
+  payload: {
+    id
   }
 });

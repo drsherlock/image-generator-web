@@ -4,7 +4,8 @@ import {
   SELECT_IMAGE_FAILURE,
   GENERATE_IMAGE_STARTED,
   GENERATE_IMAGE_SUCCESS,
-  GENERATE_IMAGE_FAILURE
+  GENERATE_IMAGE_FAILURE,
+  SET_IMAGE_ID
 } from "../actions/types";
 
 const initialState = {
@@ -52,6 +53,11 @@ export default function image(state = initialState, action) {
         ...state,
         loading: false,
         error: action.payload.error
+      };
+    case SET_IMAGE_ID:
+      return {
+        ...state,
+        imageId: action.payload.id
       };
     default:
       return state;

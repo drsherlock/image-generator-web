@@ -3,7 +3,12 @@ import { connect } from "react-redux";
 import Peer from "peerjs";
 import Automerge from "automerge";
 
-import { selectImage, generateImage, updateLocalState } from "./actions";
+import {
+  selectImage,
+  setImageId,
+  generateImage,
+  updateLocalState
+} from "./actions";
 
 import * as am from "./am";
 
@@ -19,20 +24,20 @@ function App(props) {
   const {
     onImageSelect,
     onImageGenerate,
+    onImageIdReceive,
     onLocalStateChange,
     imageId,
     images,
     localState
   } = props;
   const [title, setTitle] = useState("");
+  const [cursorPos, setCursorPos] = useState(0);
   const [titleColor, setTitleColor] = useState("");
   const [fonts, setFonts] = useState([]);
   const [fileSrc, setFileSrc] = useState(null);
 
   const [peerId, setPeerId] = useState("");
   const [conn, setConn] = useState(null);
-
-  const [cursorPos, setCursorPos] = useState(0);
 
   const peer = new Peer();
 
@@ -55,6 +60,15 @@ function App(props) {
     });
   }, []);
 
+  useEffect(() => {
+    if (conn) {
+      const newState = am.change(localState, "Update image id", s => {
+        s.imageId = imageId;
+      });
+      handleNewState(newState);
+    }
+  }, [imageId]);
+
   const connect = () => {
     const connection = peer.connect(peerId);
     setConn(connection);
@@ -66,6 +80,8 @@ function App(props) {
         s.title = new Automerge.Text();
         s.fonts = [];
         s.titleColor = "";
+        s.fileSrc = null;
+        s.imageId = "";
       });
       onLocalStateChange(state);
       connection.send(JSON.stringify(am.getAllChanges(state)));
@@ -80,6 +96,8 @@ function App(props) {
     setCursorPos(newState.title.length);
     setFonts(newState.fonts);
     setTitleColor(newState.titleColor);
+    setFileSrc(newState.fileSrc);
+    onImageIdReceive(newState.imageId);
   };
 
   const handleFormSubmit = async e => {
@@ -104,7 +122,6 @@ function App(props) {
 
   const handleTitleSelectPeer = useCallback(
     e => {
-      // console.log(e);
       if (conn) {
         const newState = am.change(localState, "Update title", s => {
           if (e.key === "Backspace") {
@@ -133,19 +150,45 @@ function App(props) {
     setTitle(e.target.value);
   }, []);
 
-  const handleFileSelect = async e => {
+  const handleFileSelectLocal = async e => {
     const file = e.target.files[0];
     if (file.size / 1024 > 5120) {
       alert("Maximum file size exceeded");
       return;
     }
 
-    setFileSrc(URL.createObjectURL(file));
+    const onloadend = reader => () => {
+      const base64data = reader.result;
+      setFileSrc(base64data);
+    };
+    handleBlob(file, onloadend);
 
     const request = new FormData();
     request.append("image", file);
 
     onImageSelect(request);
+  };
+
+  const handleFileSelectPeer = async e => {
+    if (conn) {
+      const file = e.target.files[0];
+
+      const onloadend = reader => () => {
+        const base64data = reader.result;
+        const newState = am.change(localState, "Update file", s => {
+          s.fileSrc = base64data;
+        });
+        handleNewState(newState);
+      };
+      handleBlob(file, onloadend);
+    }
+  };
+
+  const handleBlob = (file, onloadend) => {
+    const blob = new Blob([file], { type: file.type });
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onloadend = onloadend(reader);
   };
 
   const handleFontsSelectLocal = e => {
@@ -198,7 +241,8 @@ function App(props) {
       <section id="app">
         <Options
           handleFormSubmit={handleFormSubmit}
-          handleFileSelect={handleFileSelect}
+          handleFileSelectLocal={handleFileSelectLocal}
+          handleFileSelectPeer={handleFileSelectPeer}
           titleColor={titleColor}
           handleTitleColorSelectLocal={handleTitleColorSelectLocal}
           handleTitleColorSelectPeer={handleTitleColorSelectPeer}
@@ -234,6 +278,9 @@ const mapDispatchToProps = dispatch => {
   return {
     onImageSelect: request => {
       dispatch(selectImage(request));
+    },
+    onImageIdReceive: id => {
+      dispatch(setImageId(id));
     },
     onImageGenerate: request => {
       dispatch(generateImage(request));

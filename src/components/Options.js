@@ -6,7 +6,8 @@ import { availableFonts } from "../availableFonts";
 function Options(props) {
   const {
     handleFormSubmit,
-    handleFileSelect,
+    handleFileSelectLocal,
+    handleFileSelectPeer,
     titleColor,
     handleTitleColorSelectLocal,
     handleTitleColorSelectPeer,
@@ -25,7 +26,13 @@ function Options(props) {
           <div className="options-inner">
             <div className="options-label">Select your file</div>
             <div id="file">
-              <input type="file" onChange={handleFileSelect} />
+              <input
+                type="file"
+                onChange={e => {
+                  handleFileSelectLocal(e);
+                  handleFileSelectPeer(e);
+                }}
+              />
             </div>
           </div>
           <div className="options-inner">

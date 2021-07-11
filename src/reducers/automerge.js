@@ -10,7 +10,7 @@ export default function automerge(state = initialState, action) {
   switch (action.type) {
     case UPDATE_LOCAL_STATE:
       return {
-        localState: action.payload
+        localState: action.payload.data
       };
     default:
       return state;
