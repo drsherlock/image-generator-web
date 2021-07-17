@@ -6,7 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import { store } from "./store";
 
 import App from "./App";
-import ErrorBoundary from "./ErrorBoundary";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 import "./index.css";
 

@@ -15,6 +15,8 @@ import * as am from "./am";
 import Options from "./components/Options";
 import Image from "./components/Image";
 import Connect from "./components/Connect";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 
 import { CHARACTERS } from "./keyMap";
 
@@ -237,7 +239,7 @@ function App(props) {
 
   return (
     <>
-      <header>Image Generator</header>
+      <Header />
       <section id="app">
         <Options
           handleFormSubmit={handleFormSubmit}
@@ -261,7 +263,7 @@ function App(props) {
         />
       </section>
       <Connect peerId={peerId} setPeerId={setPeerId} connect={connect} />
-      <footer>Copyright &copy; 2021 drsherlock</footer>
+      <Footer />
     </>
   );
 }
