@@ -21,7 +21,7 @@ test("updates on input change", () => {
     <Connect peerId={peerId} setPeerId={setPeerId} connect={connect} />
   );
 
-  const inputElement = getByTestId("my-input");
+  const inputElement = getByTestId("input-testid");
   const newPeerId = "new-test-peer-id";
   fireEvent.change(inputElement, { target: { value: newPeerId } });
 
@@ -38,7 +38,7 @@ test("updates on button click", () => {
     <Connect peerId={peerId} setPeerId={setPeerId} connect={connect} />
   );
 
-  const buttonElement = getByTestId("my-button");
+  const buttonElement = getByTestId("button-testid");
   fireEvent.click(buttonElement);
 
   expect(connect).toHaveBeenCalledTimes(1);

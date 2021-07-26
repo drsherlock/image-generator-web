@@ -9,9 +9,13 @@ function Connect(props) {
         type="text"
         value={peerId}
         onChange={e => setPeerId(e.target.value)}
-        data-testid="my-input"
+        data-testid="input-testid"
       />
-      <button onClick={() => connect()} type="button" data-testid="my-button">
+      <button
+        onClick={() => connect()}
+        type="button"
+        data-testid="button-testid"
+      >
         Connect
       </button>
     </div>
