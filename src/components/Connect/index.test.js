@@ -1,13 +1,12 @@
-import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import { render, fireEvent, cleanup } from "@testing-library/react";
 
 import Connect from "./";
 
 afterEach(cleanup);
 
 test("renders connect", () => {
-  render(<Connect />);
-  const connectElement = screen.getByText("Connect");
-  expect(connectElement).toBeInTheDocument();
+  const { getByText } = render(<Connect />);
+  const connectElement = getByText("Connect");
 });
 
 test("updates on input change", () => {

@@ -1,7 +1,7 @@
 import React from "react";
 import ImageGallery from "react-image-gallery";
 
-import { config } from "../config";
+import { config } from "../../config";
 
 function Image(props) {
   const { fileSrc, images, handleMouseClick } = props;
@@ -10,7 +10,12 @@ function Image(props) {
     <div id="image">
       {fileSrc ? (
         images.length === 0 ? (
-          <img src={fileSrc} alt="uploaded file" id="image-original" />
+          <img
+            src={fileSrc}
+            alt="uploaded file"
+            id="image-original"
+            data-testid="img-testid"
+          />
         ) : (
           <ImageGallery
             showThumbnails={false}
