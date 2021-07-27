@@ -4,7 +4,7 @@ import Connect from "./";
 
 afterEach(cleanup);
 
-test("renders connect", () => {
+test("renders Connect", () => {
   const { getByText } = render(<Connect />);
   const connectElement = getByText("Connect");
 });
