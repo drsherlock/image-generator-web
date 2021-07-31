@@ -13,6 +13,7 @@ function SelectFile(props) {
             handleFileSelectLocal(e);
             handleFileSelectPeer(e);
           }}
+          data-testid="file-input-testid"
         />
       </div>
     </>

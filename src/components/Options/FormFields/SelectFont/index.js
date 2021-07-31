@@ -19,6 +19,7 @@ function SelectFont(props) {
                 handleFontsSelectLocal(e);
                 handleFontsSelectPeer(e);
               }}
+              data-testid="checkbox-testid"
             />{" "}
             {f.name}
           </label>

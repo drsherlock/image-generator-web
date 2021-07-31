@@ -1,7 +1,5 @@
-import { render, fireEvent, cleanup } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 import SelectTitle from "./";
-
-afterEach(cleanup);
 
 test("renders SelectTitle", () => {
   const title = "";
@@ -32,10 +30,10 @@ test("updates on input change", () => {
       handleTitleSelectPeer={handleTitleSelectPeer}
     />
   );
-
   const inputElement = getByTestId("input-testid");
   const newTitle = "new-test-title";
   fireEvent.change(inputElement, { target: { value: newTitle } });
+
   expect(handleTitleSelectLocal).toHaveBeenCalledTimes(1);
   expect(title).toBe(newTitle);
 });
@@ -52,9 +50,9 @@ test("update title", () => {
       handleTitleSelectPeer={handleTitleSelectPeer}
     />
   );
-
   const inputElement = getByTestId("input-testid");
   const newTitle = "new-test-title";
   fireEvent.keyDown(inputElement, { key: "A", code: "KeyA" });
+
   expect(handleTitleSelectPeer).toHaveBeenCalledTimes(1);
 });

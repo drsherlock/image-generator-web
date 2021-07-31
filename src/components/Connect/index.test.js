@@ -1,8 +1,6 @@
-import { render, fireEvent, cleanup } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 
 import Connect from "./";
-
-afterEach(cleanup);
 
 test("renders Connect", () => {
   const { getByText } = render(<Connect />);
@@ -19,7 +17,6 @@ test("updates on input change", () => {
   const { getByTestId } = render(
     <Connect peerId={peerId} setPeerId={setPeerId} connect={connect} />
   );
-
   const inputElement = getByTestId("input-testid");
   const newPeerId = "new-test-peer-id";
   fireEvent.change(inputElement, { target: { value: newPeerId } });
@@ -36,7 +33,6 @@ test("updates on button click", () => {
   const { getByTestId } = render(
     <Connect peerId={peerId} setPeerId={setPeerId} connect={connect} />
   );
-
   const buttonElement = getByTestId("button-testid");
   fireEvent.click(buttonElement);
 

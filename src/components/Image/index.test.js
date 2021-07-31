@@ -14,6 +14,7 @@ test("renders uploaded image", () => {
     />
   );
   const imageElement = getByTestId("img-testid");
+
   expect(imageElement).toHaveAttribute("src", fileSrc);
 });
 
@@ -30,6 +31,7 @@ test("renders generated images", () => {
     />
   );
   const imageElement = queryByTestId("img-testid");
+
   expect(imageElement).not.toBeInTheDocument();
   // expect(imageElement).not.toHaveAttribute("src", fileSrc);
 });
